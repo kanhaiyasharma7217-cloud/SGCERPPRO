@@ -379,7 +379,15 @@ fun ProductScreen(navController: NavHostController) {
                     mrp = mrp,
                     dealerRate = dealerRate,
                     stock = stock,
-                    imageUrl = imageUri?.toString() ?: "",
+                    imageUrl =
+                        if (imageUri != null) {
+                            ImageStorage.saveImage(
+                                context,
+                                imageUri!!
+                            )
+                        } else {
+                            ""
+                        },
                     isNewArrival = isNewArrival
                 )
 
@@ -401,6 +409,8 @@ fun ProductScreen(navController: NavHostController) {
                     saleRate = ""
                     mrp = ""
                     stock = ""
+                    imageUri = null
+                    isNewArrival = false
 
                     expandedCompany = false
 

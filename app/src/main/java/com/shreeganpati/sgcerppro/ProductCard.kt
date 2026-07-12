@@ -89,7 +89,48 @@ fun ProductCard(
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
+                val mrpValue = product.mrp.toDoubleOrNull() ?: 0.0
 
+                val dealerValue = product.dealerRate.toDoubleOrNull() ?: 0.0
+
+                val saveAmount = mrpValue - dealerValue
+
+                val discount =
+                    if (mrpValue > 0)
+                        (saveAmount * 100 / mrpValue).toInt()
+                    else
+                        0
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                if (product.isNewArrival) {
+
+                    AssistChip(
+                        onClick = { },
+                        label = {
+                            Text("🆕 NEW")
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                }
+
+                AssistChip(
+                    onClick = { },
+                    label = {
+                        Text("🟢 $discount% OFF")
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "💰 You Save ₹${String.format("%.0f", saveAmount)}",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+                
                 Text("Stock : ${product.stock}")
 
                 Spacer(modifier = Modifier.height(10.dp))
