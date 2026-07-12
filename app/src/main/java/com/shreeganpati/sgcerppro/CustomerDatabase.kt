@@ -256,10 +256,19 @@ class CustomerDatabase(context: Context) :
                         dealerRate = cursor.getString(10),
                         stock = cursor.getString(11),
                         imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("imageUrl")),
-                        isNewArrival = false
+                        isNewArrival =
+                            cursor.getInt(
+                                cursor.getColumnIndexOrThrow("isNewArrival")
+                            ) == 1
                     )
                     )
+                fun getNewArrivalProducts(): MutableList<Product> {
 
+                    return getAllProducts().filter {
+                        it.isNewArrival
+                    }.toMutableList()
+
+                }
 
 
             } while (cursor.moveToNext())
@@ -443,5 +452,12 @@ class CustomerDatabase(context: Context) :
 
         return result > 0
    }
-}
+    fun getNewArrivalProducts(): MutableList<Product> {
+
+        return getAllProducts()
+            .filter { it.isNewArrival }
+            .toMutableList()
+    }
+    }
+
 

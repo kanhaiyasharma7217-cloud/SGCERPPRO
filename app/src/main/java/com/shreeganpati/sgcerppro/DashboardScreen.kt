@@ -24,11 +24,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
 
 @Composable
 fun DashboardScreen(
     navController: NavHostController
 ) {
+    val context = LocalContext.current
+
+    val database = remember {
+        CustomerDatabase(context)
+    }
+
+      val newArrivalProducts = remember {
+        database.getNewArrivalProducts()
+    }
 
     Column(
         modifier = Modifier
@@ -48,6 +61,34 @@ fun DashboardScreen(
             text = "Dealer ERP",
             color = Color.Gray
         )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        if (newArrivalProducts.isNotEmpty()) {
+
+            Text(
+                text = "🔥 NEW ARRIVAL",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+                items(newArrivalProducts.take(5)) { product ->
+
+                    ProductCard(
+                        product = product,
+                        onAddClick = {}
+                    )
+
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
