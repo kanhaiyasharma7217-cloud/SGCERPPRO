@@ -14,6 +14,11 @@ import androidx.navigation.NavHostController
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenuItem
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreen(navController: NavHostController) {
@@ -49,7 +54,21 @@ fun ProductScreen(navController: NavHostController) {
 
     }
 
-    val imageUrl = ""
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    var isNewArrival by remember {
+        mutableStateOf(false)
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+
+        imageUri = uri
+
+    }
 
     val dealerRate = remember(
         company,
@@ -104,10 +123,71 @@ fun ProductScreen(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Column(
+                modifier = Modifier.padding(12.dp)
+            ) {
+
+                if (imageUri != null) {
+
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                }
+
+                Button(
+                    onClick = {
+
+                        launcher.launch("image/*")
+
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text("📷 Choose Product Photo")
+
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row {
+
+                    Checkbox(
+                        checked = isNewArrival,
+                        onCheckedChange = {
+
+                            isNewArrival = it
+
+                        }
+                    )
+
+                    Text("New Arrival Product")
+
+                }
+
+            }
+
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+
         ExposedDropdownMenuBox(
             expanded = expandedCompany,
             onExpandedChange = {
                 expandedCompany = !expandedCompany
+
+
             }
         ) {
 
@@ -299,7 +379,8 @@ fun ProductScreen(navController: NavHostController) {
                     mrp = mrp,
                     dealerRate = dealerRate,
                     stock = stock,
-                    imageUrl = imageUrl
+                    imageUrl = imageUri?.toString() ?: "",
+                    isNewArrival = isNewArrival
                 )
 
                 if (result) {

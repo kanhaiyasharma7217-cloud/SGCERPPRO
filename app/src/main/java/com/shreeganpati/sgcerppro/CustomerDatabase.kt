@@ -47,7 +47,8 @@ class CustomerDatabase(context: Context) :
                 mrp TEXT,
                 dealerRate TEXT,
                 stock TEXT,
-                imageUrl TEXT
+                imageUrl TEXT,
+                isNewArrival INTEGER DEFAULT 0
             )
             """.trimIndent()
         )
@@ -193,7 +194,8 @@ class CustomerDatabase(context: Context) :
         mrp: String,
         dealerRate: String,
         stock: String,
-        imageUrl: String
+        imageUrl: String,
+        isNewArrival: Boolean
     ): Boolean {
 
         val db = writableDatabase
@@ -212,7 +214,10 @@ class CustomerDatabase(context: Context) :
         values.put("dealerRate", dealerRate)
         values.put("stock", stock)
         values.put("imageUrl", imageUrl)
-
+        values.put(
+            "isNewArrival",
+            if (isNewArrival) 1 else 0
+        )
         val result = db.insert("Products", null, values)
 
         db.close()
