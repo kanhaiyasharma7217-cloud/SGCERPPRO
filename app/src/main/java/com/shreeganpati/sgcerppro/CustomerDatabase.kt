@@ -10,6 +10,7 @@ class CustomerDatabase(context: Context) :
 
     override fun onCreate(db: SQLiteDatabase) {
 
+
         // Customers Table
         db.execSQL(
             """
@@ -249,10 +250,12 @@ class CustomerDatabase(context: Context) :
                         mrp = cursor.getString(9),
                         dealerRate = cursor.getString(10),
                         stock = cursor.getString(11),
-                        imageUrl = cursor.getString(12)
+                        imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("imageUrl")),
+                        isNewArrival = false
+                    )
                     )
 
-                )
+
 
             } while (cursor.moveToNext())
 
@@ -434,5 +437,6 @@ class CustomerDatabase(context: Context) :
         db.close()
 
         return result > 0
-    }
+   }
 }
+

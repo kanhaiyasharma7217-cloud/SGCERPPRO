@@ -13,5 +13,6 @@ data class Product(
     val stock: String,
     val company: String,
     val category: String,
-    val imageUrl: String
+    val imageUrl: String,
+    val isNewArrival: Boolean
 )
