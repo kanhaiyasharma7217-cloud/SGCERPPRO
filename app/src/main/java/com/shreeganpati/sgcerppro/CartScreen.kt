@@ -11,12 +11,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun CartScreen(navController: NavHostController) {
 
+    val context = LocalContext.current
+
+    val database = remember {
+        CustomerDatabase(context)
+    }
+
     val cartItems = remember {
-        mutableStateListOf<Cart>()
+        mutableStateListOf<Cart>().apply {
+            addAll(database.getCartItems())
+        }
+    }
+
+    val grandTotal by remember {
+        derivedStateOf {
+            cartItems.sumOf { it.amount }
+        }
     }
 
     Column(
@@ -55,7 +70,7 @@ fun CartScreen(navController: NavHostController) {
 
                 items(cartItems) { item ->
 
-                    Card(
+                                        Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp)
@@ -70,11 +85,29 @@ fun CartScreen(navController: NavHostController) {
                                 fontWeight = FontWeight.Bold
                             )
 
+
                             Text("Company : ${item.company}")
                             Text("Dealer Rate : ₹${item.dealerRate}")
                             Text("Qty : ${item.quantity}")
                             Text("Amount : ₹${item.amount}")
 
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Button(
+                                onClick = {
+
+                                    if (database.deleteCartItem(item.id)) {
+
+                                        cartItems.removeAll {
+                                            it.id == item.id
+                                        }
+
+                                    }
+
+                                }
+                            ) {
+                                Text("🗑 Remove")
+                            }
                         }
 
                     }
@@ -85,17 +118,24 @@ fun CartScreen(navController: NavHostController) {
 
         }
 
+        Text(
+            text = "Grand Total : ₹$grandTotal",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         Button(
             onClick = {
+
+                // WhatsApp Order अगले Step में
 
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-
             Text("Place Order")
-
         }
-
         Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedButton(

@@ -52,8 +52,11 @@ class MainActivity : ComponentActivity() {
                         ImportScreen(navController)
                     }
 
+                    composable("cart") {
+                        CartScreen(navController)
+                     }
+                    }
                 }
             }
         }
-    }
-}
+   }

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-
+import android.widget.Toast
 @Composable
 fun ProductListScreen(navController: NavHostController) {
 
@@ -60,10 +60,26 @@ fun ProductListScreen(navController: NavHostController) {
                 }
             ) { product ->
 
+                val database = CustomerDatabase(context)
+
                 ProductCard(
                     product = product,
                     onAddClick = {
 
+                        val success = database.insertCart(
+                            productId = product.id,
+                            productName = product.productName,
+                            company = product.company,
+                            dealerRate = product.dealerRate,
+                            quantity = 1,
+                            amount = product.dealerRate
+                        )
+
+                        Toast.makeText(
+                            context,
+                            if (success) "Added to Cart" else "Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 )
 

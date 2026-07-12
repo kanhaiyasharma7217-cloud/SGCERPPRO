@@ -2,28 +2,28 @@ package com.shreeganpati.sgcerppro
 
 data class Customer(
 
-    var id: Int = 0,
+    val id: Int = 0,
 
-    var customerName: String = "",
+    val customerName: String,
 
-    var mobile: String = "",
+    val mobile: String,
 
-    var alternateMobile: String = "",
+    val alternateMobile: String,
 
-    var gst: String = "",
+    val gst: String,
 
-    var email: String = "",
+    val email: String,
 
-    var address: String = "",
+    val address: String,
 
-    var city: String = "",
+    val city: String,
 
-    var state: String = "",
+    val state: String,
 
-    var pincode: String = "",
+    val pincode: String,
 
-    var openingBalance: Double = 0.0,
+    val openingBalance: Double,
 
-    var creditLimit: Double = 0.0
+    val creditLimit: Double
 
 )
