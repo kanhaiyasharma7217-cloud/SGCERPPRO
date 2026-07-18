@@ -15,8 +15,12 @@ class ExcelReader(
         val productCode: String,
         val hsn: String,
         val gst: String,
+        val purchaseRate: String,
+        val saleRate: String,
         val mrp: String,
+        val dealerRate: String,
         val stock: String,
+        val imageUrl: String,
         val newArrival: Boolean
     )
 
@@ -43,23 +47,21 @@ class ExcelReader(
                 ProductExcelRow(
 
                     company = row.getCell(0)?.toString() ?: "",
-
                     category = row.getCell(1)?.toString() ?: "",
-
                     productName = row.getCell(2)?.toString() ?: "",
-
                     productCode = row.getCell(3)?.toString() ?: "",
-
                     hsn = row.getCell(4)?.toString() ?: "",
-
                     gst = row.getCell(5)?.toString() ?: "",
 
-                    mrp = row.getCell(6)?.toString() ?: "",
-
-                    stock = row.getCell(7)?.toString() ?: "",
+                    purchaseRate = row.getCell(6)?.toString() ?: "",
+                    saleRate = row.getCell(7)?.toString() ?: "",
+                    mrp = row.getCell(8)?.toString() ?: "",
+                    dealerRate = row.getCell(9)?.toString() ?: "",
+                    stock = row.getCell(10)?.toString() ?: "",
+                    imageUrl = row.getCell(11)?.toString() ?: "",
 
                     newArrival =
-                        row.getCell(8)?.toString()
+                        row.getCell(12)?.toString()
                             ?.equals("YES", true) == true
 
                 )

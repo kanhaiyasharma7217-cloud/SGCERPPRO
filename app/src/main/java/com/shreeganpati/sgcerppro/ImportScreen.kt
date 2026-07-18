@@ -3,9 +3,14 @@ package com.shreeganpati.sgcerppro
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,128 +25,101 @@ fun ImportScreen(
     val context = LocalContext.current
 
     Column(
-
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp),
-
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
 
         Text(
-
             text = "Import Center",
-
             style = MaterialTheme.typography.headlineMedium
-
         )
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
-        Button(
-
-            modifier = Modifier.fillMaxWidth(),
-
-            onClick = {
-
-                Toast.makeText(
-                    context,
-                    "Product Import Coming Soon",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-
+        ImportButton(
+            title = "Import Products",
+            icon = Icons.Default.Inventory
         ) {
+            navController.navigate("importproducts")}
 
-            Icon(
-                Icons.Default.Upload,
-                contentDescription = null
-            )
+        Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.width(8.dp))
+        ImportButton(
+            title = "Import Customers",
+            icon = Icons.Default.People
+        ) {
+            navController.navigate("importproducts")        }
 
-            Text("Import Products")
+        Spacer(modifier = Modifier.height(12.dp))
 
+        ImportButton(
+            title = "Import Companies",
+            icon = Icons.Default.Business
+        ) {
+            Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
         }
 
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-
-            modifier = Modifier.fillMaxWidth(),
-
-            onClick = {
-
-                Toast.makeText(
-                    context,
-                    "Customer Import Coming Soon",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-
+        ImportButton(
+            title = "Import Product Images",
+            icon = Icons.Default.Image
         ) {
-
-            Icon(
-                Icons.Default.Upload,
-                contentDescription = null
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text("Import Customers")
-
+            Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
         }
 
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-
-            modifier = Modifier.fillMaxWidth(),
-
-            onClick = {
-
-                Toast.makeText(
-                    context,
-                    "Company Import Coming Soon",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-
+        ImportButton(
+            title = "Backup Database",
+            icon = Icons.Default.Backup
         ) {
-
-            Icon(
-                Icons.Default.Upload,
-                contentDescription = null
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text("Import Companies")
-
+            Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
         }
 
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+
+        ImportButton(
+            title = "Restore Database",
+            icon = Icons.Default.Restore
+        ) {
+            Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedButton(
-
             modifier = Modifier.fillMaxWidth(),
-
             onClick = {
-
                 navController.popBackStack()
-
             }
-
         ) {
-
             Text("Back")
-
         }
-
     }
+}
 
+@Composable
+fun ImportButton(
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit
+) {
+
+    Button(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
+    ) {
+
+        Icon(
+            imageVector = icon,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(title)
+    }
 }

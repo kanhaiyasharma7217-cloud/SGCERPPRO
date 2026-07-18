@@ -58,4 +58,5 @@ dependencies {
     implementation("org.apache.poi:poi:5.2.5")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
     implementation("org.apache.xmlbeans:xmlbeans:5.2.0")
+    implementation("androidx.documentfile:documentfile:1.0.1")
 }

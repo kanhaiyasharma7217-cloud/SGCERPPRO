@@ -261,7 +261,7 @@ class CustomerDatabase(context: Context) :
                                 cursor.getColumnIndexOrThrow("isNewArrival")
                             ) == 1
                     )
-                    )
+                )
                 fun getNewArrivalProducts(): MutableList<Product> {
 
                     return getAllProducts().filter {
@@ -451,13 +451,32 @@ class CustomerDatabase(context: Context) :
         db.close()
 
         return result > 0
-   }
+    }
+
     fun getNewArrivalProducts(): MutableList<Product> {
 
         return getAllProducts()
             .filter { it.isNewArrival }
             .toMutableList()
     }
+
+    fun isProductExists(productCode: String): Boolean {
+
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT id FROM Products WHERE productCode=?",
+            arrayOf(productCode)
+        )
+
+        val exists = cursor.count > 0
+
+        cursor.close()
+        db.close()
+
+        return exists
     }
+}
+
 
 
