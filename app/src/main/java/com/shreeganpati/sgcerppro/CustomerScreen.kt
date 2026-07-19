@@ -158,7 +158,13 @@ fun CustomerScreen(navController: NavHostController) {
                     state,
                     pincode,
                     openingBalance,
-                    creditLimit
+                    creditLimit,
+                    "Dealer",
+                    mobile,
+                    "",
+                    "",
+                    "",
+                    "Active"
                 )
 
                 if (result) {
@@ -212,3 +218,4 @@ fun CustomerScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
+

@@ -44,6 +44,18 @@ class MainActivity : ComponentActivity() {
                         ProductScreen(navController)
                     }
 
+                    composable("product/{id}") { backStackEntry ->
+
+                        val productId = backStackEntry.arguments
+                            ?.getString("id")
+                            ?.toIntOrNull() ?: 0
+
+                        ProductScreen(
+                            navController = navController,
+                            productId = productId
+                        )
+                    }
+
                     composable("productlist") {
                         ProductListScreen(navController)
                     }
@@ -55,12 +67,17 @@ class MainActivity : ComponentActivity() {
                     composable("cart") {
                         CartScreen(navController)
                     }
+
                     composable("importproducts") {
                         ImportProductsScreen(navController)
                     }
-                     }
+
+                    composable("importimages") {
+                        ImportImagesScreen(navController)
                     }
+
                 }
             }
         }
-
+    }
+}

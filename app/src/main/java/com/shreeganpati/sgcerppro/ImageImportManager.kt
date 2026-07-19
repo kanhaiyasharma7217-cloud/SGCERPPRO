@@ -1,7 +1,10 @@
 package com.shreeganpati.sgcerppro
 
 import android.content.Context
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import java.io.File
+import java.io.FileOutputStream
 
 class ImageImportManager(
     private val context: Context
@@ -11,9 +14,6 @@ class ImageImportManager(
         const val IMAGE_FOLDER = "ProductImages"
     }
 
-    /**
-     * ProductImages Folder Create
-     */
     fun createImageFolder(): File {
 
         val folder = File(
@@ -28,35 +28,88 @@ class ImageImportManager(
         return folder
     }
 
-    /**
-     * Get Folder
-     */
     fun getImageFolder(): File {
         return createImageFolder()
     }
 
-    /**
-     * Image Exists
-     */
     fun imageExists(imageName: String): Boolean {
 
-        val file = File(
+        return File(
             createImageFolder(),
             imageName
-        )
+        ).exists()
 
-        return file.exists()
     }
 
-    /**
-     * Get Image File
-     */
     fun getImageFile(imageName: String): File {
 
         return File(
             createImageFolder(),
             imageName
         )
+
+    }
+
+    fun importImages(folderUri: Uri): Triple<Int, Int, Int> {
+
+        val folder = DocumentFile.fromTreeUri(context, folderUri)
+            ?: return Triple(0, 0, 0)
+
+        val destinationFolder = createImageFolder()
+
+        var imported = 0
+        var skipped = 0
+        var failed = 0
+
+        folder.listFiles().forEach { file ->
+
+            if (!file.isFile) return@forEach
+
+            val name = file.name ?: return@forEach
+
+            if (
+                !name.endsWith(".jpg", true) &&
+                !name.endsWith(".jpeg", true) &&
+                !name.endsWith(".png", true)
+            ) {
+                return@forEach
+            }
+
+            val destination = File(destinationFolder, name)
+
+            if (destination.exists()) {
+                skipped++
+                return@forEach
+            }
+
+            try {
+
+                context.contentResolver
+                    .openInputStream(file.uri)
+                    ?.use { input ->
+
+                        FileOutputStream(destination).use { output ->
+                            input.copyTo(output)
+                        }
+
+                    }
+
+                imported++
+
+            } catch (e: Exception) {
+
+                failed++
+
+            }
+
+        }
+
+        return Triple(
+            imported,
+            skipped,
+            failed
+        )
+
     }
 
 }

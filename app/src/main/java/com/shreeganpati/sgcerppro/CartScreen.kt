@@ -21,7 +21,6 @@ fun CartScreen(navController: NavHostController) {
     val database = remember {
         CustomerDatabase(context)
     }
-
     val cartItems = remember {
         mutableStateListOf<Cart>().apply {
             addAll(database.getCartItems())

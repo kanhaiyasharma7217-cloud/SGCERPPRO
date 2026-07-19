@@ -23,12 +23,14 @@ fun rememberImagePickerState(): ImagePickerState {
 }
 
 @Composable
-fun rememberGalleryLauncher(
-    state: ImagePickerState
+fun rememberFolderLauncher(
+    onFolderSelected: (Uri) -> Unit
 ) = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent()
+    contract = ActivityResultContracts.OpenDocumentTree()
 ) { uri ->
 
-    state.imageUri = uri
+    uri?.let {
+        onFolderSelected(it)
+    }
 
 }

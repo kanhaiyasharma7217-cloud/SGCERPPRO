@@ -48,9 +48,27 @@ class ExcelImportManager(
                     saleRate = item.saleRate,
                     mrp = item.mrp,
                     dealerRate = item.dealerRate,
+                    specialRate = "",
+                    specialDiscount = "",
                     stock = item.stock,
-                    imageUrl = item.imageUrl,
-                    isNewArrival = item.newArrival
+                    description = "",
+                    image1 = item.imageUrl,
+                    image2 = "",
+                    image3 = "",
+                    image4 = "",
+                    image5 = "",
+                    videoUrl = "",
+                    pdfUrl = "",
+                    offerTitle = "",
+                    offerStart = "",
+                    offerEnd = "",
+                    isNewArrival = item.newArrival,
+                    isFeatured = false,
+                    isBestSeller = false,
+                    isSpecial = false,
+                    isFestivalOffer = false,
+                    isComingSoon = false,
+                    status = "Active"
 
                 )
 

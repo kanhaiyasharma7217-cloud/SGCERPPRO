@@ -4,26 +4,38 @@ data class Customer(
 
     val id: Int = 0,
 
-    val customerName: String,
+    val customerName: String = "",
 
-    val mobile: String,
+    val mobile: String = "",
 
-    val alternateMobile: String,
+    val alternateMobile: String = "",
 
-    val gst: String,
+    val gst: String = "",
 
-    val email: String,
+    val email: String = "",
 
-    val address: String,
+    val address: String = "",
 
-    val city: String,
+    val city: String = "",
 
-    val state: String,
+    val state: String = "",
 
-    val pincode: String,
+    val pincode: String = "",
 
-    val openingBalance: Double,
+    val openingBalance: Double = 0.0,
 
-    val creditLimit: Double
+    val creditLimit: Double = 0.0,
+
+    val customerType: String = "",
+
+    val whatsapp: String = "",
+
+    val birthday: String = "",
+
+    val anniversary: String = "",
+
+    val notes: String = "",
+
+    val status: String = ""
 
 )

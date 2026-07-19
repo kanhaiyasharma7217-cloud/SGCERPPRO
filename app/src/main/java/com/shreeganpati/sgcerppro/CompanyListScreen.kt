@@ -23,7 +23,7 @@ fun CompanyListScreen(navController: NavHostController) {
     val companyList = remember {
         mutableStateListOf<Company>().apply {
             addAll(database.getAllCompanies())
-        }
+       }
     }
 
     var search by remember { mutableStateOf("") }
@@ -236,3 +236,4 @@ fun CompanyListScreen(navController: NavHostController) {
     }
 
 }
+

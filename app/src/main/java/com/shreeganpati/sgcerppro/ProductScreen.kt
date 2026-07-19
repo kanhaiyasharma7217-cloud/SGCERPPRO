@@ -21,10 +21,16 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductScreen(navController: NavHostController) {
+fun ProductScreen(
+    navController: NavHostController,
+    productId: Int = 0
+) {
 
     val context = LocalContext.current
     val database = remember { CustomerDatabase(context) }
+
+    
+
 
     var productName by remember { mutableStateOf("") }
     var productCode by remember { mutableStateOf("") }
@@ -368,29 +374,54 @@ fun ProductScreen(navController: NavHostController) {
             onClick = {
 
                 val result = database.insertProduct(
+
                     productName = productName,
                     productCode = productCode,
+
                     category = category,
                     company = company,
+
                     hsnCode = hsnCode,
                     gstRate = gstRate,
+
                     purchaseRate = purchaseRate,
                     saleRate = saleRate,
+
                     mrp = mrp,
                     dealerRate = dealerRate,
-                    stock = stock,
-                    imageUrl =
-                        if (imageUri != null) {
-                            ImageStorage.saveImage(
-                                context,
-                                imageUri!!
-                            )
-                        } else {
-                            ""
-                        },
-                    isNewArrival = isNewArrival
-                )
 
+                    specialRate = "",
+                    specialDiscount = "",
+
+                    stock = stock,
+
+                    description = "",
+
+                    image1 = if (imageUri != null)
+                        ImageStorage.saveImage(context, imageUri!!)
+                    else "",
+
+                    image2 = "",
+                    image3 = "",
+                    image4 = "",
+                    image5 = "",
+
+                    videoUrl = "",
+                    pdfUrl = "",
+
+                    offerTitle = "",
+                    offerStart = "",
+                    offerEnd = "",
+
+                    isNewArrival = isNewArrival,
+                    isFeatured = false,
+                    isBestSeller = false,
+                    isSpecial = false,
+                    isFestivalOffer = false,
+                    isComingSoon = false,
+
+                    status = "Active"
+                )
                 if (result) {
 
                     Toast.makeText(

@@ -1,232 +1,188 @@
 package com.shreeganpati.sgcerppro
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
-fun ProductListScreen(navController: NavHostController) {
+fun ProductListScreen(
+    navController: NavController
+) {
 
     val context = LocalContext.current
+    val db = remember { CustomerDatabase(context) }
 
-    val database = remember {
-        CustomerDatabase(context)
+    var products by remember {
+        mutableStateOf(db.getAllProducts())
     }
 
     var search by remember {
         mutableStateOf("")
     }
 
-    var selectedCompany by remember {
+    var companyFilter by remember {
         mutableStateOf("All")
     }
 
-    val companyList = remember {
-        mutableStateListOf("All").apply {
+    val filteredProducts = products.filter {
 
-            database.getAllCompanies().forEach {
-
-                add(it.companyName)
-
-            }
-
-        }
-    }
-
-    val productList = remember {
-
-        mutableStateListOf<Product>().apply {
-
-            addAll(database.getAllProducts())
-
-        }
+        (companyFilter == "All" || it.company == companyFilter) &&
+                (
+                        it.productName.contains(search, true) ||
+                                it.productCode.contains(search, true)
+                        )
 
     }
 
-    val filteredProducts = productList.filter {
+    Scaffold(
 
-        val searchMatch =
-            it.productName.contains(search, true) ||
-                    it.productCode.contains(search, true)
+        floatingActionButton = {
 
-        val companyMatch =
-            selectedCompany == "All" ||
-                    it.company == selectedCompany
+            FloatingActionButton(
+                onClick = {
 
-        searchMatch && companyMatch
+                    navController.navigate("product")
 
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-
-        Text(
-            text = "Product List",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        OutlinedTextField(
-            value = search,
-            onValueChange = {
-                search = it
-            },
-            label = {
-                Text("Search Product")
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        var expanded by remember {
-            mutableStateOf(false)
-        }
-
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {
-                expanded = !expanded
-            }
-        ) {
-
-            OutlinedTextField(
-                value = selectedCompany,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Company")
-                },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = {
-                    expanded = false
                 }
             ) {
 
-                companyList.forEach {
-
-                    DropdownMenuItem(
-
-                        text = {
-
-                            Text(it)
-
-                        },
-
-                        onClick = {
-
-                            selectedCompany = it
-
-                            expanded = false
-
-                        }
-
-                    )
-
-                }
-
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-
-            text = "Total Products : ${filteredProducts.size}",
-
-            style = MaterialTheme.typography.titleMedium
-
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-
-            items(filteredProducts) { product ->
-
-                ProductCard(
-
-                    product = product,
-
-                    onAddClick = {
-
-                        val success =
-                            database.insertCart(
-
-                                productId = product.id,
-
-                                productName = product.productName,
-
-                                company = product.company,
-
-                                dealerRate = product.dealerRate,
-
-                                quantity = 1,
-
-                                amount = product.dealerRate
-
-                            )
-
-                        Toast.makeText(
-
-                            context,
-
-                            if (success)
-                                "Added To Cart"
-                            else
-                                "Failed",
-
-                            Toast.LENGTH_SHORT
-
-                        ).show()
-
-                    }
-
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add Product"
                 )
 
             }
 
         }
 
-        OutlinedButton(
-
-            onClick = {
-
-                navController.popBackStack()
-
-            },
-
-            modifier = Modifier.fillMaxWidth()
-
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(12.dp)
+                .fillMaxSize()
         ) {
 
-            Text("Back")
+            OutlinedTextField(
+                value = search,
+                onValueChange = { search = it },
+                label = {
+                    Text("Search Product")
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Button(
+                    onClick = {
+                        companyFilter = "All"
+                    }
+                ) {
+                    Text("All")
+                }
+
+                Button(
+                    onClick = {
+                        companyFilter = "PEXPO"
+                    }
+                ) {
+                    Text("PEXPO")
+                }
+
+                Button(
+                    onClick = {
+                        companyFilter = "HIC"
+                    }
+                ) {
+                    Text("HIC")
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "Total Products : ${filteredProducts.size}",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+
+                    db.deleteAllProducts()
+                    products = db.getAllProducts()
+
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+
+                Icon(
+                    Icons.Default.DeleteSweep,
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text("Delete All")
+
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            LazyColumn {
+
+                items(filteredProducts) { product ->                    ProductCard(
+                    product = product,
+
+                    onAddClick = { qty ->
+
+                        CartManager.addToCart(
+                            product = product,
+                            quantity = qty
+                        )
+
+                    },
+
+                    onEditClick = {
+
+                        navController.navigate(
+                            "product/${product.id}"
+                        )
+
+                    },
+
+                    onDeleteClick = {
+
+                        db.deleteProduct(product.id)
+                        products = db.getAllProducts()
+
+                    }
+
+                )
+
+                }
+
+            }
 
         }
 
