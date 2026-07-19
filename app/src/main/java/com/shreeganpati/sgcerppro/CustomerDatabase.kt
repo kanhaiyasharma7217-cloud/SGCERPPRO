@@ -10,7 +10,7 @@ class CustomerDatabase(context: Context) :
         context,
         "SGC_ERP.db",
         null,
-        7
+        8
     ) {
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -125,17 +125,24 @@ class CustomerDatabase(context: Context) :
         db.execSQL(
             """
             CREATE TABLE Companies(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                companyCode TEXT,
-                companyName TEXT,
-                discount REAL,
-                gst TEXT,
-                phone TEXT,
-                email TEXT,
-                address TEXT,
-                website TEXT,
-                status TEXT
-            )
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    companyCode TEXT,
+    companyName TEXT,
+
+    discount REAL,
+
+    gst TEXT,
+    phone TEXT,
+    email TEXT,
+
+    address TEXT,
+    website TEXT,
+
+    logo TEXT,
+
+    status TEXT
+)
             """.trimIndent()
         )
 
@@ -1035,6 +1042,7 @@ class CustomerDatabase(context: Context) :
             .filter { it.isComingSoon }
             .toMutableList()
     }
+
     fun getCartItems(): MutableList<Cart> {
 
         val cartList = mutableListOf<Cart>()
@@ -1067,7 +1075,6 @@ class CustomerDatabase(context: Context) :
                 )
 
             } while (cursor.moveToNext())
-
         }
 
         cursor.close()
@@ -1104,20 +1111,28 @@ class CustomerDatabase(context: Context) :
         email: String,
         address: String,
         website: String,
+        logo: String,
         status: String
     ): Boolean {
 
         val db = writableDatabase
 
         val values = ContentValues().apply {
+
             put("companyCode", companyCode)
             put("companyName", companyName)
+
             put("discount", discount)
+
             put("gst", gst)
             put("phone", phone)
             put("email", email)
+
             put("address", address)
             put("website", website)
+
+            put("logo", logo)
+
             put("status", status)
         }
 
@@ -1128,16 +1143,25 @@ class CustomerDatabase(context: Context) :
     }
 
     fun updateCompany(
+
         id: Int,
+
         companyCode: String,
         companyName: String,
+
         discount: Double,
+
         gst: String,
         phone: String,
         email: String,
+
         address: String,
         website: String,
+
+        logo: String,
+
         status: String
+
     ): Boolean {
 
         val db = writableDatabase
@@ -1152,6 +1176,7 @@ class CustomerDatabase(context: Context) :
             put("address", address)
             put("website", website)
             put("status", status)
+            put("logo", logo)
         }
 
         val result = db.update(
@@ -1183,16 +1208,29 @@ class CustomerDatabase(context: Context) :
                 companyList.add(
 
                     Company(
+
                         id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+
                         companyCode = cursor.getString(cursor.getColumnIndexOrThrow("companyCode")),
+
                         companyName = cursor.getString(cursor.getColumnIndexOrThrow("companyName")),
+
                         discount = cursor.getDouble(cursor.getColumnIndexOrThrow("discount")),
+
                         gst = cursor.getString(cursor.getColumnIndexOrThrow("gst")),
+
                         phone = cursor.getString(cursor.getColumnIndexOrThrow("phone")),
+
                         email = cursor.getString(cursor.getColumnIndexOrThrow("email")),
+
                         address = cursor.getString(cursor.getColumnIndexOrThrow("address")),
+
                         website = cursor.getString(cursor.getColumnIndexOrThrow("website")),
+
+                        logo = cursor.getString(cursor.getColumnIndexOrThrow("logo")),
+
                         status = cursor.getString(cursor.getColumnIndexOrThrow("status"))
+
                     )
 
                 )

@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
                         ProductScreen(
                             navController = navController,
                             productId = productId
+
                         )
                     }
 
