@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
                     composable("dashboard") {
                         DashboardScreen(navController)
                     }
+                    navController.navigate("category")
 
                     composable("customer") {
                         CustomerScreen(navController)
@@ -83,6 +84,9 @@ class MainActivity : ComponentActivity() {
 
                     composable("importimages") {
                         ImportImagesScreen(navController)
+                    }
+                    composable("category") {
+                        CategoryScreen(navController)
                     }
 
                 }
