@@ -3,237 +3,221 @@ package com.shreeganpati.sgcerppro
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun CompanyListScreen(navController: NavHostController) {
+fun CompanyListScreen(
+    navController: NavHostController
+) {
 
     val context = LocalContext.current
-    val database = remember { CustomerDatabase(context) }
 
-    val companyList = remember {
-        mutableStateListOf<Company>().apply {
-            addAll(database.getAllCompanies())
-       }
+    val database = remember {
+        CustomerDatabase(context)
     }
 
-    var search by remember { mutableStateOf("") }
-    var deleteCompany by remember { mutableStateOf<Company?>(null) }
+    var search by remember {
+        mutableStateOf("")
+    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
+    var companyList by remember {
+        mutableStateOf(database.getAllCompanies())
+    }
 
-        Text(
-            text = "Company List",
-            style = MaterialTheme.typography.headlineMedium
-        )
+    val filteredList = companyList.filter {
 
-        Spacer(modifier = Modifier.height(15.dp))
+        it.companyName.contains(search, true) ||
+                it.companyCode.contains(search, true)
 
-        OutlinedTextField(
-            value = search,
-            onValueChange = { search = it },
-            label = { Text("Search Company") },
-            modifier = Modifier.fillMaxWidth()
-        )
+    }
 
-        Spacer(modifier = Modifier.height(10.dp))
+    Scaffold(
 
-        Text(
-            text = "Total Companies : ${companyList.size}"
-        )
+        floatingActionButton = {
 
-        Spacer(modifier = Modifier.height(10.dp))
+            FloatingActionButton(
 
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                navController.navigate("company")
+                onClick = {
+
+                    navController.navigate("company")
+
+                }
+
+            ) {
+
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add Company"
+                )
+
             }
+
+        }
+
+    ) { padding ->
+
+        Column(
+
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(12.dp)
+
         ) {
 
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null
+            OutlinedTextField(
+
+                value = search,
+
+                onValueChange = {
+
+                    search = it
+
+                },
+
+                modifier = Modifier.fillMaxWidth(),
+
+                leadingIcon = {
+
+                    Icon(
+                        Icons.Default.Search,
+                        null
+                    )
+
+                },
+
+                label = {
+
+                    Text("Search Company")
+
+                },
+
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text
+                )
+
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text("Add New Company")
+            Text(
 
-        }
+                text = "Total Companies : ${filteredList.size}",
 
-        Spacer(modifier = Modifier.height(15.dp))
+                style = MaterialTheme.typography.titleMedium
 
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
+            )
 
-            items(
+            Spacer(modifier = Modifier.height(10.dp))
 
-                companyList.filter {
+            LazyColumn {
 
-                    it.companyName.contains(search, true) ||
-                            it.companyCode.contains(search, true)
+                items(filteredList) { company ->
 
-                }
+                         CompanyItem(
 
-            ) { company ->
+                        company = company,
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                ) {
+                             onEdit = {
+                                 navController.navigate("company")
+                             },
 
-                    Column(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
+                             onDelete = {
 
-                        Text(
-                            text = company.companyName,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                                 database.deleteCompany(company.id)
 
-                        Text("Code : ${company.companyCode}")
-                        Text("Discount : ${company.discount}%")
-                        Text("Status : ${company.status}")
-
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            OutlinedButton(
-                                onClick = {
-
-                                    // Edit Screen (Next Step)
-
-                                }
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = null
-                                )
-
-                                Spacer(modifier = Modifier.width(5.dp))
-
-                                Text("Edit")
-
-                            }
-
-                            Button(
-                                onClick = {
-
-                                    deleteCompany = company
-
-                                }
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = null
-                                )
-
-                                Spacer(modifier = Modifier.width(5.dp))
-
-                                Text("Delete")
-
-                            }
+                                 companyList = database.getAllCompanies()
 
                         }
 
-                    }
+                    )
 
                 }
 
             }
 
         }
-
-    }
-
-    deleteCompany?.let { company ->
-
-        AlertDialog(
-
-            onDismissRequest = {
-
-                deleteCompany = null
-
-            },
-
-            title = {
-
-                Text("Delete Company")
-
-            },
-
-            text = {
-
-                Text("Are you sure you want to delete ${company.companyName}?")
-
-            },
-
-            confirmButton = {
-
-                Button(
-
-                    onClick = {
-
-                        if (database.deleteCompany(company.id)) {
-
-                            companyList.remove(company)
-
-                        }
-
-                        deleteCompany = null
-
-                    }
-
-                ) {
-
-                    Text("Delete")
-
-                }
-
-            },
-
-            dismissButton = {
-
-                OutlinedButton(
-
-                    onClick = {
-
-                        deleteCompany = null
-
-                    }
-
-                ) {
-
-                    Text("Cancel")
-
-                }
-
-            }
-
-        )
 
     }
 
 }
+@Composable
+fun CompanyItem(
+    company: Company,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
 
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp),
+        elevation = CardDefaults.cardElevation(5.dp)
+    ) {
+
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+
+            Text(
+                text = company.companyName,
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text("Code : ${company.companyCode}")
+
+            Text("GST : ${company.gst}")
+
+            Text("Discount : ${company.discount}%")
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                IconButton(
+                    onClick = onEdit
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit"
+                    )
+
+                }
+
+                IconButton(
+                    onClick = onDelete
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete"
+                    )
+
+                }
+
+            }
+
+        }
+
+    }
+
+}

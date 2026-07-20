@@ -6,13 +6,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,21 +32,17 @@ fun CompanyScreen(
 ) {
 
     val context = LocalContext.current
-    val database = remember { CustomerDatabase(context) }
+    val database = remember {
+        CustomerDatabase(context)
+    }
 
-    //-----------------------------
-    // Edit Mode
-    //-----------------------------
-
-    var companyId by remember { mutableStateOf(0) }
+    var companyId by remember {
+        mutableStateOf(0)
+    }
 
     var isEditMode by remember {
         mutableStateOf(false)
     }
-
-    //-----------------------------
-    // Company Fields
-    //-----------------------------
 
     var companyCode by remember {
         mutableStateOf("")
@@ -83,10 +80,6 @@ fun CompanyScreen(
         mutableStateOf("Active")
     }
 
-    //-----------------------------
-    // Logo
-    //-----------------------------
-
     var logoUri by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -99,385 +92,445 @@ fun CompanyScreen(
         rememberLauncherForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
-
             logoUri = uri
-
         }
 
-    //-----------------------------
-    // Company List
-    //-----------------------------
-
     var companyList by remember {
-
-        mutableStateOf(
-            database.getAllCompanies()
-        )
-
+        mutableStateOf(database.getAllCompanies())
     }
 
-    //-----------------------------
-    // Search
-    //-----------------------------
-
     var search by remember {
-
         mutableStateOf("")
-
     }
 
     val filteredCompanies =
         companyList.filter {
+            it.companyName.contains(search, true) ||
+                    it.companyCode.contains(search, true)
 
-            it.companyName.contains(
-                search,
-                ignoreCase = true
-            ) ||
-                    it.companyCode.contains(
-                        search,
-                        ignoreCase = true
-                    )
 
         }
 
-    val scroll = rememberScrollState()
+    LaunchedEffect(Unit) {
 
-    Column(
+        SelectedCompany.company?.let { company ->
 
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scroll)
-            .padding(16.dp)
+            companyId = company.id
+            isEditMode = true
 
-    ) {
+            companyCode = company.companyCode
+            companyName = company.companyName
+            discount = company.discount.toString()
 
-        Text(
+            gst = company.gst
+            phone = company.phone
+            email = company.email
 
-            text = if (isEditMode)
-                "Edit Company"
-            else
-                "Company Master",
+            address = company.address
+            website = company.website
 
-            style = MaterialTheme.typography.headlineMedium
-
-        )
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        OutlinedTextField(
-
-            value = search,
-
-            onValueChange = {
-
-                search = it
-
-            },
-
-            label = {
-
-                Text("Search Company")
-
-            },
-
-            modifier = Modifier.fillMaxWidth()
-
-        )
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            Column(
-                modifier = Modifier.padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                when {
-
-                    logoUri != null -> {
-
-                        AsyncImage(
-                            model = logoUri,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp),
-                            contentScale = ContentScale.Crop
-                        )
-
-                    }
-
-                    logoPath.isNotEmpty() -> {
-
-                        AsyncImage(
-                            model = logoPath,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp),
-                            contentScale = ContentScale.Crop
-                        )
-
-                    }
-
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Button(
-
-                    onClick = {
-
-                        logoPicker.launch("image/*")
-
-                    }
-
-                ) {
-
-                    Icon(
-                        Icons.Default.Photo,
-                        contentDescription = null
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text("Upload Logo")
-
-                }
-
-            }
+            logoPath = company.logo
+            status = company.status
 
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-        OutlinedTextField(
-            value = companyCode,
-            onValueChange = { companyCode = it },
-            label = { Text("Company Code") },
-            modifier = Modifier.fillMaxWidth()
-        )
+    }
+    Scaffold(
 
-        Spacer(modifier = Modifier.height(10.dp))
+        topBar = {
 
-        OutlinedTextField(
-            value = companyName,
-            onValueChange = { companyName = it },
-            label = { Text("Company Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            TopAppBar(
 
-        Spacer(modifier = Modifier.height(10.dp))
+                title = {
 
-        OutlinedTextField(
-            value = discount,
-            onValueChange = { discount = it },
-            label = { Text("Dealer Discount %") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = gst,
-            onValueChange = { gst = it },
-            label = { Text("GST Number") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = phone,
-            onValueChange = { phone = it },
-            label = { Text("Phone Number") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = website,
-            onValueChange = { website = it },
-            label = { Text("Website") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = address,
-            onValueChange = { address = it },
-            label = { Text("Address") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = status,
-            onValueChange = { status = it },
-            label = { Text("Status") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-
-                if (
-                    companyName.isBlank() ||
-                    companyCode.isBlank()
-                ) {
-
-                    Toast.makeText(
-                        context,
-                        "Enter Company Name & Code",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    return@Button
-                }
-
-                val logo = if (logoUri != null)
-                    ImageStorage.saveImage(
-                        context,
-                        logoUri!!
-                    )
-                else
-                    logoPath
-
-                val result =
-                    if (isEditMode) {
-
-                        database.updateCompany(
-
-                            id = companyId,
-
-                            companyCode = companyCode,
-                            companyName = companyName,
-
-                            discount = discount.toDoubleOrNull() ?: 0.0,
-
-                            gst = gst,
-                            phone = phone,
-                            email = email,
-
-                            address = address,
-                            website = website,
-
-                            logo = logo,
-
-                            status = status
-
-                        )
-
-                    } else {
-
-                        database.insertCompany(
-
-                            companyCode = companyCode,
-                            companyName = companyName,
-
-                            discount = discount.toDoubleOrNull() ?: 0.0,
-
-                            gst = gst,
-                            phone = phone,
-                            email = email,
-
-                            address = address,
-                            website = website,
-
-                            logo = logo,
-
-                            status = status
-
-                        )
-
-                    }
-
-                if (result) {
-
-                    Toast.makeText(
-
-                        context,
-
+                    Text(
                         if (isEditMode)
-                            "Company Updated"
+                            "Edit Company"
                         else
-                            "Company Saved",
+                            "Company Master"
+                    )
 
-                        Toast.LENGTH_SHORT
+                },
 
-                    ).show()
+                navigationIcon = {
 
-                    companyCode = ""
-                    companyName = ""
-                    discount = ""
-                    gst = ""
-                    phone = ""
-                    email = ""
-                    address = ""
-                    website = ""
-                    status = "Active"
-
-                    logoUri = null
-                    logoPath = ""
-
-                    companyId = 0
-                    isEditMode = false
-
-                    companyList =
-                        database.getAllCompanies()
+                    IconButton(
+                        onClick = {
+                            SelectedCompany.company = null
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            null
+                        )
+                    }
 
                 }
-
-            }
-
-        ) {
-
-            Text(
-
-                text =
-                    if (isEditMode)
-                        "UPDATE COMPANY"
-                    else
-                        "SAVE COMPANY",
-
-                fontSize = 18.sp
 
             )
 
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+    ) { padding ->
+        Column(
 
-        Text(
-            text = "Company List",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp)
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+
         ) {
 
-            items(filteredCompanies) { company ->
+            OutlinedTextField(
+
+                value = search,
+
+                onValueChange = {
+                    search = it
+                },
+
+                label = {
+                    Text("Search Company")
+                },
+
+                modifier = Modifier.fillMaxWidth()
+
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Column(
+
+                    modifier = Modifier.padding(12.dp),
+
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+
+                    when {
+
+                        logoUri != null -> {
+
+                            AsyncImage(
+
+                                model = logoUri,
+
+                                contentDescription = null,
+
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp),
+
+                                contentScale = ContentScale.Crop
+
+                            )
+
+                        }
+
+                        logoPath.isNotEmpty() -> {
+
+                            AsyncImage(
+
+                                model = logoPath,
+
+                                contentDescription = null,
+
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp),
+
+                                contentScale = ContentScale.Crop
+
+                            )
+
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(
+
+                        onClick = {
+
+                            logoPicker.launch("image/*")
+
+                        }
+
+                    ) {
+
+                        Icon(
+                            Icons.Default.Photo,
+                            contentDescription = null
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text("Upload Logo")
+
+                    }
+
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(
+
+                value = companyCode,
+
+                onValueChange = {
+                    companyCode = it
+                },
+
+                label = {
+                    Text("Company Code")
+                },
+
+                modifier = Modifier.fillMaxWidth()
+
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+
+                value = companyName,
+
+                onValueChange = {
+                    companyName = it
+                },
+
+                label = {
+                    Text("Company Name")
+                },
+
+                modifier = Modifier.fillMaxWidth()
+
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+
+                value = discount,
+
+                onValueChange = {
+                    discount = it
+                },
+
+                label = {
+                    Text("Dealer Discount %")
+                },
+
+                modifier = Modifier.fillMaxWidth()
+
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = gst,
+                onValueChange = { gst = it },
+                label = { Text("GST Number") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = phone,
+                onValueChange = { phone = it },
+                label = { Text("Phone Number") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = website,
+                onValueChange = { website = it },
+                label = { Text("Website") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = address,
+                onValueChange = { address = it },
+                label = { Text("Address") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = status,
+                onValueChange = { status = it },
+                label = { Text("Status") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+
+                    if (companyName.isBlank() || companyCode.isBlank()) {
+
+                        Toast.makeText(
+                            context,
+                            "Enter Company Name & Company Code",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@Button
+                    }
+
+                    val logo = if (logoUri != null)
+                        ImageStorage.saveImage(
+                            context,
+                            logoUri!!
+                        )
+                    else
+                        logoPath
+
+                    val result =
+                        if (isEditMode) {
+
+                            database.updateCompany(
+
+                                id = companyId,
+
+                                companyCode = companyCode,
+
+                                companyName = companyName,
+
+                                discount = discount.toDoubleOrNull() ?: 0.0,
+
+                                gst = gst,
+
+                                phone = phone,
+
+                                email = email,
+
+                                address = address,
+
+                                website = website,
+
+                                logo = logo,
+
+                                status = status
+
+                            )
+
+                        } else {
+
+                            database.insertCompany(
+
+                                companyCode = companyCode,
+
+                                companyName = companyName,
+
+                                discount = discount.toDoubleOrNull() ?: 0.0,
+
+                                gst = gst,
+
+                                phone = phone,
+
+                                email = email,
+
+                                address = address,
+
+                                website = website,
+
+                                logo = logo,
+
+                                status = status
+
+                            )
+
+                        }
+                    if (result) {
+
+                        Toast.makeText(
+                            context,
+                            if (isEditMode)
+                                "Company Updated Successfully"
+                            else
+                                "Company Saved Successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        SelectedCompany.company = null
+
+                        companyCode = ""
+                        companyName = ""
+                        discount = ""
+                        gst = ""
+                        phone = ""
+                        email = ""
+                        address = ""
+                        website = ""
+                        status = "Active"
+
+                        logoUri = null
+                        logoPath = ""
+
+                        companyId = 0
+                        isEditMode = false
+
+                        companyList = database.getAllCompanies()
+
+                    }
+
+                }
+
+            ) {
+
+                Icon(
+                    Icons.Default.Save,
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    if (isEditMode)
+                        "UPDATE COMPANY"
+                    else
+                        "SAVE COMPANY",
+                    fontSize = 18.sp
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "Company List",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            filteredCompanies.forEach { company ->
 
                 Card(
                     modifier = Modifier
@@ -488,20 +541,6 @@ fun CompanyScreen(
                     Column(
                         modifier = Modifier.padding(12.dp)
                     ) {
-
-                        if (company.logo.isNotEmpty()) {
-
-                            AsyncImage(
-                                model = company.logo,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
 
                         Text(
                             text = company.companyName,
@@ -524,22 +563,15 @@ fun CompanyScreen(
                                 onClick = {
 
                                     companyId = company.id
-
                                     companyCode = company.companyCode
                                     companyName = company.companyName
-
-                                    discount =
-                                        company.discount.toString()
-
+                                    discount = company.discount.toString()
                                     gst = company.gst
                                     phone = company.phone
                                     email = company.email
-
                                     address = company.address
                                     website = company.website
-
                                     logoPath = company.logo
-
                                     status = company.status
 
                                     isEditMode = true
@@ -563,9 +595,7 @@ fun CompanyScreen(
 
                                 onClick = {
 
-                                    database.deleteCompany(
-                                        company.id
-                                    )
+                                    database.deleteCompany(company.id)
 
                                     companyList =
                                         database.getAllCompanies()
@@ -595,20 +625,6 @@ fun CompanyScreen(
 
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-
-                navController.popBackStack()
-
-            }
-        ) {
-
-            Text("Back")
-
-        }
-
     }
+
 }

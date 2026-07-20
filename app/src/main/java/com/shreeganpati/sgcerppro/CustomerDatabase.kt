@@ -219,6 +219,23 @@ class CustomerDatabase(context: Context) :
             )
             """.trimIndent()
         )
+        db.execSQL(
+            """
+    CREATE TABLE Categories(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        categoryCode TEXT,
+
+        categoryName TEXT,
+
+        company TEXT,
+
+        description TEXT,
+
+        status TEXT
+    )
+    """.trimIndent()
+        )
 
     }
 
@@ -236,6 +253,7 @@ class CustomerDatabase(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS Announcements")
         db.execSQL("DROP TABLE IF EXISTS Notifications")
         db.execSQL("DROP TABLE IF EXISTS Marketing")
+        db.execSQL("DROP TABLE IF EXISTS Categories")
 
         onCreate(db)
     }
@@ -1259,6 +1277,97 @@ class CustomerDatabase(context: Context) :
 
         return result > 0
     }
+    fun insertCategory(
+        categoryCode: String,
+        categoryName: String,
+        company: String,
+        description: String,
+        status: String
+    ): Boolean {
+
+        val db = writableDatabase
+
+        val values = ContentValues()
+
+        values.put("categoryCode", categoryCode)
+        values.put("categoryName", categoryName)
+        values.put("company", company)
+        values.put("description", description)
+        values.put("status", status)
+
+        return db.insert("Categories", null, values) != -1L
+    }
+    fun updateCategory(
+        id: Int,
+        categoryCode: String,
+        categoryName: String,
+        company: String,
+        description: String,
+        status: String
+    ): Boolean {
+
+        val db = writableDatabase
+
+        val values = ContentValues()
+
+        values.put("categoryCode", categoryCode)
+        values.put("categoryName", categoryName)
+        values.put("company", company)
+        values.put("description", description)
+        values.put("status", status)
+
+        return db.update(
+            "Categories",
+            values,
+            "id=?",
+            arrayOf(id.toString())
+        ) > 0
+    }
+    fun deleteCategory(id: Int): Boolean {
+
+        val db = writableDatabase
+
+        return db.delete(
+            "Categories",
+            "id=?",
+            arrayOf(id.toString())
+        ) > 0
+    }
+    fun getAllCategories(): List<Category> {
+
+        val list = mutableListOf<Category>()
+
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT * FROM Categories ORDER BY categoryName",
+            null
+        )
+
+        while (cursor.moveToNext()) {
+
+            list.add(
+
+                Category(
+
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+
+                    categoryCode = cursor.getString(cursor.getColumnIndexOrThrow("categoryCode")),
+
+                    categoryName = cursor.getString(cursor.getColumnIndexOrThrow("categoryName")),
+
+                    company = cursor.getString(cursor.getColumnIndexOrThrow("company")),
+
+                    description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
+
+                    status = cursor.getString(cursor.getColumnIndexOrThrow("status"))
+
+                )
+            )
+        }
+
+        cursor.close()
+
+        return list
+    }
 }
-
-

@@ -67,17 +67,26 @@ fun ProductScreen(
     // Companies
     //-------------------------
 
-    val companyList = remember {
-        database.getAllCompanies()
+    var companyList by remember {
+        mutableStateOf(listOf<Company>())
+    }
+
+    LaunchedEffect(Unit) {
+        companyList = database.getAllCompanies()
     }
 
     var expandedCompany by remember {
         mutableStateOf(false)
     }
 
-    val filteredCompanies = companyList.filter {
-        it.companyName.contains(company, true)
-    }
+    val filteredCompanies =
+        if (company.isBlank()) {
+            companyList
+        } else {
+            companyList.filter {
+                it.companyName.contains(company, ignoreCase = true)
+            }
+        }
 
     //-------------------------
     // Image Picker

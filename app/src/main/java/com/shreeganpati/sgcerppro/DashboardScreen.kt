@@ -141,6 +141,7 @@ if (newArrivalProducts.isNotEmpty()) {
         }
 
         Spacer(modifier = Modifier.height(12.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -148,22 +149,46 @@ if (newArrivalProducts.isNotEmpty()) {
 
             DashboardCard(
                 modifier = Modifier.weight(1f),
-                title = "Cart",
-                icon = Icons.Default.ShoppingCart
+                title = "Company",
+                icon = Icons.Default.Inventory
             ) {
-                navController.navigate("cart")
+                navController.navigate("companylist")
             }
 
             DashboardCard(
                 modifier = Modifier.weight(1f),
-                title = "Import",
+                title = "Category",
                 icon = Icons.Default.Inventory
             ) {
-                navController.navigate("import")
+                navController.navigate("categorylist")
             }
 
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            DashboardCard(
+                modifier = Modifier.weight(1f),
+                title = "Reports",
+                icon = Icons.Default.Receipt
+            ) {
+                // Coming Soon
+            }
+
+            DashboardCard(
+                modifier = Modifier.weight(1f),
+                title = "Settings",
+                icon = Icons.Default.Settings
+            ) {
+                // Coming Soon
+            }
+
+        }
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(
