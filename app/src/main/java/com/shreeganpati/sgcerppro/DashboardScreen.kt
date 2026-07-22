@@ -1,5 +1,7 @@
 package com.shreeganpati.sgcerppro
 
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,7 +30,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Image
 
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Image
 @Composable
 fun DashboardScreen(
     navController: NavHostController
@@ -160,9 +166,8 @@ if (newArrivalProducts.isNotEmpty()) {
                 title = "Category",
                 icon = Icons.Default.Inventory
             ) {
-                navController.navigate("categorylist")
+                navController.navigate("category")
             }
-
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -187,7 +192,30 @@ if (newArrivalProducts.isNotEmpty()) {
             ) {
                 // Coming Soon
             }
+            Spacer(modifier = Modifier.height(12.dp))
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                DashboardCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Import",
+                    icon = Icons.Default.Upload
+                ) {
+                    navController.navigate("import")
+                }
+
+                DashboardCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Images",
+                    icon = Icons.Default.Image
+                ) {
+                    navController.navigate("importimages")
+                }
+
+            }
         }
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -196,19 +224,8 @@ if (newArrivalProducts.isNotEmpty()) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            DashboardCard(
-                modifier = Modifier.weight(1f),
-                title = "Reports",
-                icon = Icons.Default.Receipt
-            ) {
-                // Coming Soon
-            }
+            {
 
-            DashboardCard(
-                modifier = Modifier.weight(1f),
-                title = "Settings",
-                icon = Icons.Default.Settings
-            ) {
                 // Coming Soon
             }
 

@@ -10,7 +10,7 @@ class CustomerDatabase(context: Context) :
         context,
         "SGC_ERP.db",
         null,
-        8
+        9
     ) {
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -236,7 +236,39 @@ class CustomerDatabase(context: Context) :
     )
     """.trimIndent()
         )
+        db.execSQL("""
+    CREATE TABLE OrderItems(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        orderId INTEGER,
+        productId INTEGER,
+        productName TEXT,
+        productCode TEXT,
+        quantity INTEGER,
+        rate REAL,
+        gst REAL,
+        discount REAL,
+        amount REAL
+    )
+""".trimIndent())
 
+        db.execSQL("""
+    CREATE TABLE Orders(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        orderNo TEXT,
+        customerId INTEGER,
+        customerName TEXT,
+        mobile TEXT,
+        address TEXT,
+        orderDate TEXT,
+        subTotal REAL,
+        discount REAL,
+        gst REAL,
+        grandTotal REAL,
+        paymentMode TEXT,
+        paymentStatus TEXT,
+        orderStatus TEXT
+    )
+""".trimIndent())
     }
 
     override fun onUpgrade(
@@ -1369,5 +1401,160 @@ class CustomerDatabase(context: Context) :
         cursor.close()
 
         return list
+    }fun insertOrder(order: Order): Long {
+
+        val db = writableDatabase
+
+        val values = ContentValues().apply {
+
+            put("orderNo", order.orderNo)
+            put("customerId", order.customerId)
+            put("customerName", order.customerName)
+            put("mobile", order.mobile)
+            put("address", order.address)
+            put("orderDate", order.orderDate)
+            put("subTotal", order.subTotal)
+            put("discount", order.discount)
+            put("gst", order.gst)
+            put("grandTotal", order.grandTotal)
+            put("paymentMode", order.paymentMode)
+            put("paymentStatus", order.paymentStatus)
+            put("orderStatus", order.orderStatus)
+
+        }
+
+        val id = db.insert("Orders", null, values)
+
+        db.close()
+
+        return id
+    }fun insertOrderItem(item: OrderItem): Long {
+
+        val db = writableDatabase
+
+        val values = ContentValues().apply {
+
+            put("orderId", item.orderId)
+            put("productId", item.productId)
+            put("productName", item.productName)
+            put("productCode", item.productCode)
+            put("quantity", item.quantity)
+            put("rate", item.rate)
+            put("gst", item.gst)
+            put("discount", item.discount)
+            put("amount", item.amount)
+
+        }
+
+        val id = db.insert("OrderItems", null, values)
+
+        db.close()
+
+        return id
+    }fun getAllOrders(): MutableList<Order> {
+
+        val list = mutableListOf<Order>()
+
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT * FROM Orders ORDER BY id DESC",
+            null
+        )
+
+        while (cursor.moveToNext()) {
+
+            list.add(
+
+                Order(
+
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    orderNo = cursor.getString(cursor.getColumnIndexOrThrow("orderNo")),
+                    customerId = cursor.getInt(cursor.getColumnIndexOrThrow("customerId")),
+                    customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName")),
+                    mobile = cursor.getString(cursor.getColumnIndexOrThrow("mobile")),
+                    address = cursor.getString(cursor.getColumnIndexOrThrow("address")),
+                    orderDate = cursor.getString(cursor.getColumnIndexOrThrow("orderDate")),
+                    subTotal = cursor.getDouble(cursor.getColumnIndexOrThrow("subTotal")),
+                    discount = cursor.getDouble(cursor.getColumnIndexOrThrow("discount")),
+                    gst = cursor.getDouble(cursor.getColumnIndexOrThrow("gst")),
+                    grandTotal = cursor.getDouble(cursor.getColumnIndexOrThrow("grandTotal")),
+                    paymentMode = cursor.getString(cursor.getColumnIndexOrThrow("paymentMode")),
+                    paymentStatus = cursor.getString(cursor.getColumnIndexOrThrow("paymentStatus")),
+                    orderStatus = cursor.getString(cursor.getColumnIndexOrThrow("orderStatus"))
+
+                )
+
+            )
+
+        }
+
+        cursor.close()
+        db.close()
+
+        return list
+
+    }fun getOrderItems(orderId: Int): MutableList<OrderItem> {
+
+        val list = mutableListOf<OrderItem>()
+
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+
+            "SELECT * FROM OrderItems WHERE orderId=?",
+
+            arrayOf(orderId.toString())
+
+        )
+
+        while (cursor.moveToNext()) {
+
+            list.add(
+
+                OrderItem(
+
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    orderId = cursor.getInt(cursor.getColumnIndexOrThrow("orderId")),
+                    productId = cursor.getInt(cursor.getColumnIndexOrThrow("productId")),
+                    productName = cursor.getString(cursor.getColumnIndexOrThrow("productName")),
+                    productCode = cursor.getString(cursor.getColumnIndexOrThrow("productCode")),
+                    quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity")),
+                    rate = cursor.getDouble(cursor.getColumnIndexOrThrow("rate")),
+                    gst = cursor.getDouble(cursor.getColumnIndexOrThrow("gst")),
+                    discount = cursor.getDouble(cursor.getColumnIndexOrThrow("discount")),
+                    amount = cursor.getDouble(cursor.getColumnIndexOrThrow("amount"))
+
+                )
+
+            )
+
+        }
+
+        cursor.close()
+        db.close()
+
+        return list
+
+    }fun deleteOrder(id: Int): Boolean {
+
+        val db = writableDatabase
+
+        db.delete(
+            "OrderItems",
+            "orderId=?",
+            arrayOf(id.toString())
+        )
+
+        val result = db.delete(
+            "Orders",
+            "id=?",
+            arrayOf(id.toString())
+        )
+
+        db.close()
+
+        return result > 0
+
     }
 }

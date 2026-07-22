@@ -18,7 +18,6 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
 
                 val navController = rememberNavController()
-
                 NavHost(
                     navController = navController,
                     startDestination = "login"
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
                     composable("dashboard") {
                         DashboardScreen(navController)
                     }
-                    navController.navigate("category")
 
                     composable("customer") {
                         CustomerScreen(navController)

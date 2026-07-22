@@ -58,6 +58,7 @@ fun ProductScreen(
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
+
     // Existing Image Path
     var imagePath by remember { mutableStateOf("") }
 
@@ -70,6 +71,17 @@ fun ProductScreen(
     var companyList by remember {
         mutableStateOf(listOf<Company>())
     }
+    var categoryList by remember {
+        mutableStateOf(listOf<Category>())
+    }
+
+    LaunchedEffect(Unit) {
+        categoryList = database.getAllCategories()
+    }
+
+    var expandedCategory by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         companyList = database.getAllCompanies()
@@ -78,6 +90,7 @@ fun ProductScreen(
     var expandedCompany by remember {
         mutableStateOf(false)
     }
+
 
     val filteredCompanies =
         if (company.isBlank()) {
@@ -315,12 +328,55 @@ fun ProductScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        OutlinedTextField(
-            value = category,
-            onValueChange = { category = it },
-            label = { Text("Category") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        ExposedDropdownMenuBox(
+            expanded = expandedCategory,
+            onExpandedChange = {
+                expandedCategory = !expandedCategory
+            }
+        ) {
+
+            OutlinedTextField(
+                value = category,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Category") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expandedCategory)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expandedCategory,
+                onDismissRequest = {
+                    expandedCategory = false
+                }
+            ) {
+
+                categoryList.forEach {
+
+                    DropdownMenuItem(
+
+                        text = {
+                            Text(it.categoryName)
+                        },
+
+                        onClick = {
+
+                            category = it.categoryName
+                            expandedCategory = false
+
+                        }
+
+                    )
+
+                }
+
+            }
+
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
