@@ -85,6 +85,15 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("category") {
                         CategoryScreen(navController)
+
+                    }
+                    composable("orders") {
+
+                        OrderListScreen(navController)
+
+                    }
+                    composable("order") {
+                        OrderScreen(navController)
                     }
 
                 }
@@ -92,3 +101,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
